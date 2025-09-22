@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Vendors — ShopSmartley{% endblock %}
+{% block content %}
+<h2>Vendors</h2>
+<div class="mb-3">
+  <a href="/add-vendor" class="btn btn-success">Add Vendor</a>
+  <a href="/track-products" class="btn btn-info">Track Prices</a>
+</div>
+<div id="vendorsContainer" class="row"></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+async function loadVendors(){
+  const out = document.getElementById("vendorsContainer");
+  out.innerHTML = '<div class="col-12 text-center py-4">Loading…</div>';
+  try {
+    const res = await fetch("/vendors");
+    const vendors = await res.json();
+    if (!vendors || vendors.length === 0) {
+      out.innerHTML = '<div class="col-12"><div class="alert alert-info">No vendors found.</div></div>';
+      return;
+    }
+    let html = "";
+    vendors.forEach(v=>{
+      html += `<div class="col-md-4">
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5 class="card-title">${v.vendor_name || '—'}</h5>
+            <p class="card-text"><a href="${v.website_url||'#'}" target="_blank" rel="noreferrer">${v.website_url || 'No website'}</a></p>
+            <div class="mt-2">
+              <a href="/edit-vendor?vendor_id=${v.vendor_id}" class="btn btn-sm btn-primary">Edit</a>
+              <button class="btn btn-sm btn-danger" onclick="deleteVendor(${v.vendor_id})">Delete</button>
+              <a class="btn btn-sm btn-outline-secondary" href="/search?q=${encodeURIComponent(v.vendor_name||'')}" title="Search products from this vendor">Search</a>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    });
+    out.innerHTML = html;
+  } catch (e) {
+    out.innerHTML = '<div class="col-12"><div class="alert alert-danger">Failed to load vendors</div></div>';
+  }
+}
+
+async function deleteVendor(id){
+  if(!confirm("Delete vendor and related product prices?")) return;
+  try {
+    const res = await fetch(`/vendors/${id}`, { method: "DELETE" });
+    const j = await res.json();
+    alert(j.message || "Deleted");
+    loadVendors();
+  } catch(e){
+    alert("Delete failed");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+  loadVendors();
+});
+</script>
+{% endblock %}

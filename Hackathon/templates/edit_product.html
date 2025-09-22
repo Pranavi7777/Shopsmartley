@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Edit Product{% endblock %}
+{% block content %}
+<h2>Edit Product</h2>
+<form id="productEditForm">
+  <input type="hidden" id="product_id">
+  <div class="form-group">
+    <label>Product Name</label>
+    <input class="form-control" id="product_name" required>
+  </div>
+  <div class="form-group">
+    <label>Category</label>
+    <input class="form-control" id="product_category">
+  </div>
+  <h5>Vendor Prices</h5>
+  <div id="vendorPriceRows"></div>
+  <button id="addVendorRow" class="btn btn-secondary" type="button">Add Vendor Row</button>
+  <br><br>
+  <button class="btn btn-primary" type="submit">Save Product</button>
+  <button id="deleteProduct" class="btn btn-danger" type="button">Delete Product</button>
+</form>
+<div id="productMessage" class="mt-2"></div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/products.js') }}"></script>
+{% endblock %}

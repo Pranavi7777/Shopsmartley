@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Add Deal{% endblock %}
+{% block content %}
+<h2>Add a Deal</h2>
+<form id="dealForm">
+  <div class="form-group">
+    <label>Product ID</label>
+    <input type="number" id="deal_product_id" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label>Vendor ID</label>
+    <input type="number" id="deal_vendor_id" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label>Deal Price</label>
+    <input type="number" id="deal_price" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label>Start Date</label>
+    <input type="date" id="deal_start_date" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label>End Date</label>
+    <input type="date" id="deal_end_date" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Add Deal</button>
+</form>
+<div id="dealMessage" class="mt-2"></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById("dealForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  fetch("/add-deal", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      product_id: document.getElementById('deal_product_id').value,
+      vendor_id: document.getElementById('deal_vendor_id').value,
+      deal_price: document.getElementById('deal_price').value,
+      start_date: document.getElementById('deal_start_date').value,
+      end_date: document.getElementById('deal_end_date').value
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    document.getElementById("dealMessage").innerHTML = '<div class="alert alert-success">'+ result.message +'</div>';
+    this.reset();
+  })
+  .catch(err => {
+    document.getElementById("dealMessage").innerHTML = '<div class="alert alert-danger">Error: '+ err +'</div>';
+  });
+});
+</script>
+{% endblock %}

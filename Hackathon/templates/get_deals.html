@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Latest Deals{% endblock %}
+{% block content %}
+<h2>Latest Deals</h2>
+<div id="dealsList"></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+fetch('/deals')
+  .then(r => r.json())
+  .then(deals => {
+    let html = '';
+    if (deals.length === 0) {
+      html = '<div class="alert alert-info">No deals available.</div>';
+    } else {
+      html = '<ul class="list-group">';
+      deals.forEach(d => {
+        html += `<li class="list-group-item">
+          <b>${d.product_name}</b> from <b>${d.vendor_name}</b> — ₹${d.deal_price} 
+          <span class="text-muted">(${d.start_date} to ${d.end_date})</span>
+        </li>`;
+      });
+      html += '</ul>';
+    }
+    document.getElementById('dealsList').innerHTML = html;
+  });
+</script>
+{% endblock %}

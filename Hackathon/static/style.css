@@ -1,0 +1,27 @@
+body {
+  background-color: #f1f1f1;
+  font-family: Arial, sans-serif;
+}
+.navbar-brand {
+  font-size: 1.8rem;
+}
+.container {
+  margin-top: 20px;
+}
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.1);
+}
+.list-group-item {
+  font-size: 1rem;
+}
+.alert {
+  font-size: 0.95rem;
+}
+h2 {
+  margin-bottom: 20px;
+  color: #343a40;
+}
+.modal { display: none; position: fixed; z-index: 1050; left: 0; top: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5);}
+.modal.show { display: block; }

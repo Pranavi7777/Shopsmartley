@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Alerts Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Optional: include Bootstrap CSS for styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Internal custom CSS */
+        body {
+            background-color: #f8f9fa;
+        }
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: #fff;
+            border-radius: 0.5rem;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        }
+        .result-box {
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background-color: #e9ecef;
+            border-radius: 0.5rem;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+
+        <h1 class="mb-4 text-center">Product Alerts Dashboard</h1>
+
+        <!-- Section: Add User -->
+        <div class="section" id="userSection">
+            <h3>Add User</h3>
+            <form id="userForm">
+                <div class="form-group">
+                    <label for="user_name">User Name</label>
+                    <input type="text" id="user_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="mobile_number">Mobile Number</label>
+                    <input type="text" id="mobile_number" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" class="form-control" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add User</button>
+            </form>
+            <div id="userResult" class="result-box"></div>
+        </div>
+
+        <!-- Section: Add Vendor -->
+        <div class="section" id="vendorSection">
+            <h3>Add Vendor</h3>
+            <form id="vendorForm">
+                <div class="form-group">
+                    <label for="vendor_name">Vendor Name</label>
+                    <input type="text" id="vendor_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="website_url">Website URL</label>
+                    <input type="url" id="website_url" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Add Vendor</button>
+            </form>
+            <div id="vendorResult" class="result-box"></div>
+        </div>
+
+        <!-- Section: Add Product -->
+        <div class="section" id="productSection">
+            <h3>Add Product & Prices</h3>
+            <form id="productForm">
+                <div class="form-group">
+                    <label for="product_name">Product Name</label>
+                    <input type="text" id="product_name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" class="form-control" required>
+                </div>
+                <h5>Vendors & Prices</h5>
+                <div id="vendorPrices">
+                    <div class="form-row mb-2">
+                        <div class="col">
+                            <input type="text" class="form-control vendor_name" placeholder="Vendor Name" required>
+                        </div>
+                        <div class="col">
+                            <input type="number" step="0.01" class="form-control vendor_price" placeholder="Price" required>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" id="addVendorRow" class="btn btn-secondary mb-2">Add Another Vendor</button><br>
+                <button type="submit" class="btn btn-primary">Add Product</button>
+            </form>
+            <div id="productResult" class="result-box"></div>
+        </div>
+
+        <!-- Section: Set Price Alert -->
+        <div class="section" id="alertSection">
+            <h3>Set Price Alert</h3>
+            <form id="alertForm">
+                <div class="form-group">
+                    <label for="alert_user_id">User ID</label>
+                    <input type="number" id="alert_user_id" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="alert_product_id">Product ID</label>
+                    <input type="number" id="alert_product_id" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="price_alert">Alert Price</label>
+                    <input type="number" step="0.01" id="price_alert" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Set Alert</button>
+            </form>
+            <div id="alertResult" class="result-box"></div>
+        </div>
+
+        <!-- Section: Get User Deals -->
+        <div class="section" id="dealsSection">
+            <h3>Get User Deals</h3>
+            <form id="dealsForm">
+                <div class="form-group">
+                    <label for="deals_user_id">User ID</label>
+                    <input type="number" id="deals_user_id" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Get Deals</button>
+            </form>
+            <div id="dealsResult" class="result-box"></div>
+        </div>
+
+        <!-- Section: View All Products -->
+        <div class="section" id="viewProductsSection">
+            <h3>View All Products</h3>
+            <button id="viewProductsBtn" class="btn btn-info">Load Products</button>
+            <div id="viewProductsResult" class="result-box"></div>
+        </div>
+
+        <!-- Section: View All Vendors -->
+        <div class="section" id="viewVendorsSection">
+            <h3>View All Vendors</h3>
+            <button id="viewVendorsBtn" class="btn btn-info">Load Vendors</button>
+            <div id="viewVendorsResult" class="result-box"></div>
+        </div>
+
+        <!-- Section: Track Product Prices -->
+        <div class="section" id="trackProductsSection">
+            <h3>Track Product Prices</h3>
+            <button id="trackProductsBtn" class="btn btn-info">Track Prices</button>
+            <div id="trackProductsResult" class="result-box"></div>
+        </div>
+    </div>
+
+    <script>
+        // Set your API base URL to the running Flask server.
+        const baseUrl = "";
+
+        // Helper function for handling fetch responses
+        function handleResponse(response) {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        }
+
+        // Add User
+        document.getElementById('userForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userData = {
+                user_name: document.getElementById('user_name').value,
+                email: document.getElementById('email').value,
+                mobile_number: document.getElementById('mobile_number').value,
+                address: document.getElementById('address').value
+            };
+
+            fetch(baseUrl + "/users", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(userData)
+            })
+            .then(handleResponse)
+            .then(data => {
+                document.getElementById('userResult').innerText = JSON.stringify(data, null, 2);
+                document.getElementById('userForm').reset();
+            })
+            .catch(error => {
+                document.getElementById('userResult').innerText = "Error: " + JSON.stringify(error);
+            });
+        });
+
+        // Add Vendor
+        document.getElementById('vendorForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const vendorData = {
+                vendor_name: document.getElementById('vendor_name').value,
+                website_url: document.getElementById('website_url').value
+            };
+
+            fetch(baseUrl + "/vendors", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(vendorData)
+            })
+            .then(handleResponse)
+            .then(data => {
+                document.getElementById('vendorResult').innerText = JSON.stringify(data, null, 2);
+                document.getElementById('vendorForm').reset();
+            })
+            .catch(error => {
+                document.getElementById('vendorResult').innerText = "Error: " + JSON.stringify(error);
+            });
+        });
+
+        // Add Product and Prices
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const vendors = [];
+            const vendorNames = document.getElementsByClassName('vendor_name');
+            const vendorPrices = document.getElementsByClassName('vendor_price');
+            for(let i = 0; i < vendorNames.length; i++){
+                vendors.push({
+                    vendor_name: vendorNames[i].value,
+                    price: parseFloat(vendorPrices[i].value)
+                });
+            }
+            const productData = {
+                product_name: document.getElementById('product_name').value,
+                category: document.getElementById('category').value,
+                vendors: vendors
+            };
+
+            fetch(baseUrl + "/products", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(productData)
+            })
+            .then(handleResponse)
+            .then(data => {
+                document.getElementById('productResult').innerText = JSON.stringify(data, null, 2);
+                document.getElementById('productForm').reset();
+            })
+            .catch(error => {
+                document.getElementById('productResult').innerText = "Error: " + JSON.stringify(error);
+            });
+        });
+
+        // Add a vendor row for product input
+        document.getElementById('addVendorRow').addEventListener('click', function() {
+            const vendorRow = document.createElement('div');
+            vendorRow.classList.add('form-row', 'mb-2');
+            vendorRow.innerHTML = `
+                <div class="col">
+                    <input type="text" class="form-control vendor_name" placeholder="Vendor Name" required>
+                </div>
+                <div class="col">
+                    <input type="number" step="0.01" class="form-control vendor_price" placeholder="Price" required>
+                </div>
+            `;
+            document.getElementById('vendorPrices').appendChild(vendorRow);
+        });
+
+        // Set Price Alert
+        document.getElementById('alertForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const alertData = {
+                user_id: parseInt(document.getElementById('alert_user_id').value),
+                product_id: parseInt(document.getElementById('alert_product_id').value),
+                price_alert: parseFloat(document.getElementById('price_alert').value)
+            };
+
+            fetch(baseUrl + "/alerts", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify(alertData)
+            })
+            .then(handleResponse)
+            .then(data => {
+                document.getElementById('alertResult').innerText = JSON.stringify(data, null, 2);
+                document.getElementById('alertForm').reset();
+            })
+            .catch(error => {
+                document.getElementById('alertResult').innerText = "Error: " + JSON.stringify(error);
+            });
+        });
+
+        // Get User Deals
+        document.getElementById('dealsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const userId = document.getElementById('deals_user_id').value;
+
+            fetch(baseUrl + "/deals/" + userId)
+            .then(handleResponse)
+            .then(data => {
+                document.getElementById('dealsResult').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('dealsResult').innerText = "Error: " + JSON.stringify(error);
+            });
+        });
+
+        // Load All Products
+        document.getElementById('viewProductsBtn').addEventListener('click', function() {
+            fetch(baseUrl + "/products")
+            .then(handleResponse)
+            .then(data => {
+                document.getElementById('viewProductsResult').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('viewProductsResult').innerText = "Error: " + JSON.stringify(error);
+            });
+        });
+
+        // Load All Vendors
+        document.getElementById('viewVendorsBtn').addEventListener('click', function() {
+            fetch(baseUrl + "/vendors")
+            .then(handleResponse)
+            .then(data => {
+                document.getElementById('viewVendorsResult').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('viewVendorsResult').innerText = "Error: " + JSON.stringify(error);
+            });
+        });
+
+        // Track Product Prices
+        document.getElementById('trackProductsBtn').addEventListener('click', function() {
+            fetch(baseUrl + "/track-products")
+            .then(handleResponse)
+            .then(data => {
+                document.getElementById('trackProductsResult').innerText = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('trackProductsResult').innerText = "Error: " + JSON.stringify(error);
+            });
+        });
+    </script>
+</body>
+</html>

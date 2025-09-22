@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Search Prices{% endblock %}
+{% block content %}
+<h2>Search Live Prices</h2>
+<form id="searchForm" class="form-inline mb-3">
+  <input id="searchQuery" class="form-control mr-2" placeholder="e.g. Apple iPhone 14" style="width:400px">
+  <button class="btn btn-primary" type="submit">Search</button>
+</form>
+<div id="searchResults"></div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}

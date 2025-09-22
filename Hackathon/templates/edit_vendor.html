@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Edit Vendor{% endblock %}
+{% block content %}
+<h2>Edit Vendor</h2>
+<form id="editVendorForm">
+  <input id="vendor_name" required>
+  <input id="website_url" required>
+  <button>Save</button>
+</form>
+<div id="vendorMessage" class="mt-2"></div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/vendors.js') }}"></script>
+<script>
+const params = new URLSearchParams(window.location.search);
+const vendor_id = params.get('vendor_id');
+fetch('/vendors/' + vendor_id)
+  .then(r=>r.json())
+  .then(v=>{
+    document.getElementById('vendor_name').value = v.vendor_name;
+    document.getElementById('website_url').value = v.website_url;
+  });
+document.getElementById('editVendorForm').onsubmit = function(e){
+  e.preventDefault();
+  fetch('/vendors/' + vendor_id, {
+    method: 'PUT',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      vendor_name: document.getElementById('vendor_name').value,
+      website_url: document.getElementById('website_url').value
+    })
+  }).then(r=>r.json()).then(alert);
+};
+</script>
+{% endblock %}

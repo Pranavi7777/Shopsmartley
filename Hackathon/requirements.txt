@@ -1,0 +1,9 @@
+Flask
+gunicorn
+psycopg2-binary
+requests
+beautifulsoup4
+lxml
+werkzeug
+# Optional: If you plan to enable Playwright in the future
+# playwright

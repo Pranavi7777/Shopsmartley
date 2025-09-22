@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Set Price Alert{% endblock %}
+{% block content %}
+<h2>Set Price Alert</h2>
+<form id="alertForm">
+  <div class="form-group">
+    <label>User ID</label>
+    <input type="number" name="user_id" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label>Product ID</label>
+    <input type="number" id="alert_product_id" name="product_id" class="form-control" required>
+  </div>
+  <div class="form-group">
+    <label>Alert Price</label>
+    <input type="number" id="alert_price" step="0.01" name="price_alert" class="form-control" required>
+  </div>
+  <button type="submit" class="btn btn-primary">Set Alert</button>
+</form>
+<div id="alertMessage" class="mt-2"></div>
+<button class="btn btn-success mb-3" onclick="window.location.href='/set-alert'">Set New Alert</button>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById("alertForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  let formData = new FormData(this);
+  let data = Object.fromEntries(formData.entries());
+  fetch("/alerts", { 
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      product_id: document.getElementById('alert_product_id').value,
+      price_alert: document.getElementById('alert_price').value
+    })
+  })
+  .then(res => res.json())
+  .then(result => {
+    document.getElementById("alertMessage").innerHTML = '<div class="alert alert-success">'+ result.message +'</div>';
+    this.reset();
+  })
+  .catch(err => {
+    document.getElementById("alertMessage").innerHTML = '<div class="alert alert-danger">Error: '+ err +'</div>';
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}My Deals / Alerts{% endblock %}
+{% block content %}
+<h2>My Deals / Alerts</h2>
+<div id="myDealsList"></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+fetch('/my-deals')
+  .then(r => r.json())
+  .then(alerts => {
+    let html = '';
+    if (alerts.length === 0) {
+      html = '<div class="alert alert-info">No deals/alerts set by you.</div>';
+    } else {
+      html = '<ul class="list-group">';
+      alerts.forEach(a => {
+        html += `<li class="list-group-item">
+          <b>${a.product_name}</b> (${a.category}) — Target Price: ₹${a.target_price}
+        </li>`;
+      });
+      html += '</ul>';
+    }
+    document.getElementById('myDealsList').innerHTML = html;
+  });
+
+fetch("/deals")
+  .then(response => response.json())
+  .then(data => {
+    let html = '';
+    if(data.length){
+      html = '<ul class="list-group">';
+      data.forEach(deal => {
+        html += '<li class="list-group-item">' +
+                  deal.product_name + ' from ' + deal.vendor_name +
+                  ' at ₹' + deal.deal_price + ' (' + deal.start_date + ' to ' + deal.end_date + ')' +
+                '</li>';
+      });
+      html += '</ul>';
+    } else {
+        html = '<p>No deals available.</p>';
+    }
+    document.getElementById("latest-deals").innerHTML = html;
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+<div class="row">
+  <div class="col-md-6">
+    <h4>Recent Products</h4>
+    <div id="recent-products"></div>
+  </div>
+  <div class="col-md-6">
+    <h4>Latest Deals</h4>
+    <div id="latest-deals"></div>
+  </div>
+</div>
+<a href="{{ url_for('my_deals_page') }}">My Deals</a>
+<a href="{{ url_for('add_deal_page') }}" class="btn btn-success mb-3">Add Deal</a>
+
+<h3>My Alerts</h3>
+<div id="myDealsList"></div>
+
+<!-- Modal for setting alert -->
+<div class="modal" tabindex="-1" id="setAlertModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Set Price Alert</h5></div>
+      <div class="modal-body">
+        <form id="setAlertForm">
+          <input type="hidden" id="alert_product_id">
+          <div class="form-group">
+            <label>Product</label>
+            <input type="text" id="alert_product_name" class="form-control" readonly>
+          </div>
+          <div class="form-group">
+            <label>Target Price</label>
+            <input type="number" id="alert_price" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Set Alert</button>
+        </form>
+        <div id="alertMsg" class="mt-2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<a href="{{ url_for('logout') }}">Logout</a>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+  fetch("/products")
+    .then(response => response.json())
+    .then(data => {
+      let html = '<ul class="list-group">';
+      data.forEach(prod => {
+         html += '<li class="list-group-item"><strong>' + prod.product_name + '</strong> (' + prod.category + ') ' +
+         '<button class="btn btn-sm btn-warning" onclick="openSetAlert(' + prod.product_id + ', \'' + prod.product_name + '\')">Set Alert</button></li>';
+      });
+      html += '</ul>';
+      document.getElementById("recent-products").innerHTML = html;
+    });
+
+  fetch("/deals")
+    .then(response => response.json())
+    .then(data => {
+      let html = '';
+      if(data.length){
+        html = '<ul class="list-group">';
+        data.forEach(deal => {
+          html += '<li class="list-group-item">' +
+                    deal.product_name + ' from ' + deal.vendor_name +
+                    ' at ₹' + deal.deal_price + ' (' + deal.start_date + ' to ' + deal.end_date + ')' +
+                  '</li>';
+        });
+        html += '</ul>';
+      } else {
+          html = '<p>No deals available.</p>';
+      }
+      document.getElementById("latest-deals").innerHTML = html;
+    });
+
+  fetch('/my-deals')
+    .then(r => r.json())
+    .then(alerts => {
+      let html = '';
+      if (alerts.length === 0) {
+        html = '<div class="alert alert-info">No deals/alerts set by you.</div>';
+      } else {
+        html = '<ul class="list-group">';
+        alerts.forEach(a => {
+          html += `<li class="list-group-item">
+            <b>${a.product_name}</b> (${a.category}) — Target Price: ₹${a.price_alert}
+          </li>`;
+        });
+        html += '</ul>';
+      }
+      document.getElementById('myDealsList').innerHTML = html;
+    });
+});
+
+function openSetAlert(pid, pname) {
+  document.getElementById('alert_product_id').value = pid;
+  document.getElementById('alert_product_name').value = pname;
+  document.getElementById('setAlertModal').classList.add('show');
+}
+document.getElementById('setAlertForm').onsubmit = function(e){
+  e.preventDefault();
+  fetch('/alerts', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      product_id: document.getElementById('alert_product_id').value,
+      price_alert: document.getElementById('alert_price').value
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    document.getElementById('alertMsg').innerHTML = '<div class="alert alert-success">'+res.message+'</div>';
+    setTimeout(()=>document.getElementById('setAlertModal').classList.remove('show'), 1000);
+  });
+};
+</script>
+{% endblock %}
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template("dashboard.html")

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Track Product Prices{% endblock %}
+{% block content %}
+<h2>Track Product Prices</h2>
+<button id="trackPrices" class="btn btn-info mb-3">Refresh Price Tracking</button>
+<div id="trackProducts"></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+const FETCH_INTERVAL_MS = 30000; // 30 seconds
+function loadTrackedPrices(){
+  fetch("/api/track-products")
+  .then(res => res.json())
+  .then(data => {
+    let html = '<div class="row">';
+    data.forEach(item => {
+      html += `<div class="col-md-6">
+        <div class="card mb-2"><div class="card-body">
+          <h5>${item.product_name}</h5>
+          <p>${item.category || ''}</p>
+          <ul>`;
+      item.vendors.forEach(v => {
+        html += `<li><a href="${v.vendor_website || '#'}" target="_blank" rel="noreferrer">${v.vendor_name}</a> — ${v.price === null ? 'N/A' : '₹' + v.price}</li>`;
+      });
+      html += `</ul></div></div></div>`;
+    });
+    html += '</div>';
+    document.getElementById("trackProducts").innerHTML = html;
+  })
+  .catch(err => {
+    document.getElementById("trackProducts").innerHTML = '<div class="alert alert-danger">Error: '+ err +'</div>';
+  });
+}
+
+document.getElementById("trackPrices").addEventListener("click", loadTrackedPrices);
+loadTrackedPrices();
+setInterval(loadTrackedPrices, FETCH_INTERVAL_MS);
+</script>
+{% endblock %}

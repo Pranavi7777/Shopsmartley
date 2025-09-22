@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}View Products{% endblock %}
+{% block content %}
+<h2>All Products</h2>
+<button id="loadProducts" class="btn btn-info mb-3">Refresh Products</button>
+<div id="productsList"></div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById("loadProducts").addEventListener("click", function(){
+  fetch("/products")
+  .then(res => res.json())
+  .then(data => {
+    let html = '<div class="row">';
+    data.forEach(prod => {
+       html += `<div class="col-md-4">
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <h5 class="card-title">${prod.product_name}</h5>
+                      <p class="card-text">${prod.category}</p>
+                    </div>
+                  </div>
+                </div>`;
+    });
+    html += '</div>';
+    document.getElementById("productsList").innerHTML = html;
+  })
+  .catch(err => {
+    document.getElementById("productsList").innerHTML = '<div class="alert alert-danger">Error: '+ err +'</div>';
+  });
+});
+</script>
+{% endblock %}
